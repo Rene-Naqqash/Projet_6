@@ -13,9 +13,12 @@ const normalizePort = val => {
     return false;
 };
 
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '4000');
 
-app.set('port', port); // ici express doit ecouter ces ports 
+app.set('port', port); 
+// ici set() est une méthode d'Express qui permet de définir des variables ou des paramètres de configuration pour mon appli. 
+//'port' est une clé ou un nom de variable que je définis. donce express doit ecouter ces ports 
+//port est la valeur attribué à cette clé, et c'est le résultat de la fonction normalizePort dans ce cas.
 
 const errorHandler = error => {
     if(error.syscall !== 'listen'){
@@ -42,12 +45,7 @@ const errorHandler = error => {
     }
 
 
-}
-
-
-
-
-
+};
 
 const server = http.createServer(app);
 
