@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-require('dotenv').config()
+require('dotenv').config();
 
-const Book = require('./models/book');
+const bookRoutes = require('./routes/book');
 
 // pour se connecter à MongoBD Atlas
 mongoose.connect(process.env.MONGO_URL,
@@ -24,24 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// le middleware pour gerer les requettes POST
- app.post('/api/books', (req,res,next) => {
-  delete req.body._id;
-  const book = new Book({
-    ...req.body
-  });
-  book.save()
-  .then(() => res.status(201).json({message: 'Objet enregistré !'}))
-  .catch( error => res.status(400).json({ error }));
- });
-
-
-// le middleware pour gerer les requettes GET 
-app.get( '/api/books',(req, res, next) => {
-    Book.find()
-    .then(books => res.status(200).json(books))
-    .catch(error => res.status(400).json({ error }));
-});
+app.use('/api/books', bookRoutes);
 
 app.use((req, res, next) => {
     res.status(202);
