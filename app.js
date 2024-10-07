@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const app = express();
 require('dotenv').config();
 
+//mes routers livres et utilisaterus
 const bookRoutes = require('./routes/book');
+const userRoutes = require('./routes/user');
 
 // pour se connecter à MongoBD Atlas
 mongoose.connect(process.env.MONGO_URL,
@@ -24,7 +26,9 @@ app.use((req, res, next) => {
   next();
 });
 
+//uilisation des routes 
 app.use('/api/books', bookRoutes);
+app.use('/api/auth', userRoutes);
 
 app.use((req, res, next) => {
     res.status(202);
