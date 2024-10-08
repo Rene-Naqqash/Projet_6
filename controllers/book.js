@@ -1,15 +1,29 @@
 const Book = require('../models/Book');
 
 // le middleware pour gerer les requettes POST
-exports.createBook = (req,res,next) => {
-    delete req.body._id;
-    const book = new Book({
-      ...req.body
-    });
-    book.save()
-    .then(() => res.status(201).json({message: 'Post saved successfully!'}))
-    .catch( error => res.status(400).json({ error }));
-   };
+exports.createBook = (req, res, next) => {
+  const bookObject = JSON.parse(req.body.book);
+  delete bookObject._id;
+  delete bookObject._userId;
+  const book = new Book({
+      ...bookObject,
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  });
+
+  book.save()
+  .then(() => res.status(201).json({message: 'Book saved!'}))
+  .catch(error => res.status(400).json({ error }));
+};
+// exports.createBook = (req,res,next) => {
+//     delete req.body._id;
+//     const book = new Book({
+//       ...req.body
+//     });
+//     book.save()
+//     .then(() => res.status(201).json({message: 'Post saved successfully!'}))
+//     .catch( error => res.status(400).json({ error }));
+//    };
 
 // Le middleware pour gérer les requêtes PUT donc pour les modifications de livres avec le bon ID
 exports.modifyBook = (req,res, next) => {

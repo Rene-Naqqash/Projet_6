@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 require('dotenv').config();
+const path = require('path');
 
 //mes routers livres et utilisaterus
 const bookRoutes = require('./routes/book');
@@ -15,7 +16,7 @@ mongoose.connect(process.env.MONGO_URL,
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
-// pour pouvoir lire le contenue de la requette rentrante donc d'une requette  POST vers notre serveur
+// middleware pour pouvoir lire le contenue de la requette rentrante donc d'une requette  POST vers notre serveur
 app.use(express.json());
 
 // un middleWare pour gerer la securité CORS
@@ -26,24 +27,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware pour servir les fichiers statiques
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 //uilisation des routes 
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
-
-app.use((req, res, next) => {
-    res.status(202);
-    next();
-});
-
-app.use((req, res, next) => {
-    res.json({ message : 'Votre Requête a bien été reçue! '})
-    next();
-});
-
-app.use((req, res) => {
-    console.log('Reponse envoyée avec succès!')
-});
-
-
 
 module.exports = app;
