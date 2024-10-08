@@ -15,15 +15,6 @@ exports.createBook = (req, res, next) => {
   .then(() => res.status(201).json({message: 'Book saved!'}))
   .catch(error => res.status(400).json({ error }));
 };
-// exports.createBook = (req,res,next) => {
-//     delete req.body._id;
-//     const book = new Book({
-//       ...req.body
-//     });
-//     book.save()
-//     .then(() => res.status(201).json({message: 'Post saved successfully!'}))
-//     .catch( error => res.status(400).json({ error }));
-//    };
 
 // Le middleware pour gérer les requêtes PUT donc pour les modifications de livres avec le bon ID
 exports.modifyBook = (req,res, next) => {

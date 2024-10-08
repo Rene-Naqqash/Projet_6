@@ -36,7 +36,7 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id},
-                            'RANDOM_TOKEN_SECRET',
+                            'RANDOM_TOKEN_SECRET_AJWTUVf4WKZhKmxskKSqPKIBbOimeMeQgdgqE89TfyTD1Cq1zehzWLjCt9EbuArKHoFmlVCIWvvXwlhwaBadLoqMxKslcGLrwaIeHdLh8YozEGB6HKhdjVFHLXdkAw3Q6j9rRZ9FF395skFIGMTkV82m3RykHlkWav5rSXjLGyP2CFBmYDWLiKvLShjl7stlpJGU3fZbyb4xDfG6f2bd3Qx4W3JS4R4Ox1w7lHAvb64xvoMrG386z7Y8VB',
                             { expiresIn: '24h'}
                         )
                     });
