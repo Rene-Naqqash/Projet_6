@@ -1,19 +1,33 @@
 const Book = require('../models/Book');
+const processImage = require('../middleware/sharp-config');
 
-// le middleware pour gerer les requettes POST
-exports.createBook = (req, res, next) => {
-  const bookObject = JSON.parse(req.body.book);
-  delete bookObject._id;
-  delete bookObject._userId;
-  const book = new Book({
+// Middleware pour gérer les requêtes POST
+exports.createBook = async (req, res, next) => {
+  try {
+    const bookObject = JSON.parse(req.body.book);
+    delete bookObject._id;
+    delete bookObject._userId;
+
+    // Chemin du fichier d'image téléchargé par Multer
+    const imageFilePath = `images/${req.file.filename}`;
+
+    // Traitement de l'image avec Sharp pour la convertir en .webp
+    const processedImagePath = await processImage(imageFilePath);
+
+    const book = new Book({
       ...bookObject,
       userId: req.auth.userId,
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-  });
+      // On met à jour l'URL de l'image compressée en .webp
+      imageUrl: `${req.protocol}://${req.get('host')}/${processedImagePath}`
+    });
 
-  book.save()
-  .then(() => res.status(201).json({message: 'Book saved!'}))
-  .catch(error => res.status(400).json({ error }));
+    // Sauvegarde du livre dans la base de données
+    await book.save();
+    res.status(201).json({ message: 'Book saved!' });
+  } catch (error) {
+    console.error('Erreur lors de la création du livre:', error);
+    res.status(400).json({ error });
+  }
 };
 
 // Le middleware pour gérer les requêtes PUT donc pour les modifications de livres avec le bon ID
