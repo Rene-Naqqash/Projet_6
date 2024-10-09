@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO_URL,
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
-// middleware pour pouvoir lire le contenue de la requette rentrante donc d'une requette  POST vers notre serveur
+// middleware pour pouvoir lire le contenue de la requette rentrante donc d'une requette POST vers notre serveur
 app.use(express.json());
 
 // un middleWare pour gerer la securité CORS
