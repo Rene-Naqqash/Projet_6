@@ -69,5 +69,4 @@ after that you can run your front-end Server.
 - **Node.js** - JavaScript runtime
 - **Express** - Fast, unopinionated, minimalist web framework for Node.js
 - **MongoDB** - NoSQL database
-- **Nodemon** - Tool that helps develop Node.js applications by automatically restarting the server on file changes
 
