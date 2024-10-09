@@ -1,4 +1,5 @@
 const Book = require('../models/Book');
+const fs = require('fs');
 const processImage = require('../middleware/sharp-config');
 
 // Middleware pour gérer les requêtes POST
@@ -25,23 +26,53 @@ exports.createBook = async (req, res, next) => {
     await book.save();
     res.status(201).json({ message: 'Book saved!' });
   } catch (error) {
-    console.error('Erreur lors de la création du livre:', error);
     res.status(400).json({ error });
   }
 };
 
 // Le middleware pour gérer les requêtes PUT donc pour les modifications de livres avec le bon ID
 exports.modifyBook = (req,res, next) => {
-    Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
-    .then(() => res.status(200).json({message:'Book updated successfully!'}))
+    const bookObject = req.file ? {
+      ...JSON.parse(req.body.Book),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : {...req.body};
+
+    delete bookObject._userId;
+    Book.findOne({_id: req.params.id})
+    .then((book) => {
+      if (book.userId != req.auth.userId){
+        res.status(401).json({ message: 'not authorized'});
+      } else {
+        Book.updateOne({_id: req.params.id}, {...bookObject, _id: req.params.id})
+        .then(() => res.status(200).json({message : 'Book update succeeded'}))
+        .catch(error => res.status(401).json({ error }));
+      }
+    })
     .catch(error => res.status(400).json({ error }));
  };
 
 // Le middleware pour gérer les requêtes delete d'un livre précis avec le bon ID
 exports.deleteBook = (req,res,next) => {
-    Book.deleteOne({ _id: req.params.id })
-    .then (() => res.status(200).json({ message: 'Book Deleted!'}))
-    .catch( error => res.status(400).json({ error}));
+  Book.findOne({_id: req.params.id})
+  .then(book => {
+    if (book.userId != req.auth.userId){
+      res.status(401).json({ message: 'not authorized'});
+    } else {
+      const filename = book.imageUrl.split('images')[1];
+      fs.unlink(`images/${filename}`, () => {
+        Book.deleteOne({_id: req.params.id})
+        .then( () => {res.status(200).json({message: 'Book Deleted!'})})
+        .catch(error => res.status(401).json({error}));
+      });
+
+    }
+
+  })
+  .cath(error => res.status(500).json({ error}));
+
+    // Book.deleteOne({ _id: req.params.id })
+    // .then (() => res.status(200).json({ message: 'Book Deleted!'}))
+    // .catch( error => res.status(400).json({ error}));
   };
 
 // get all books
