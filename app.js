@@ -16,8 +16,7 @@ mongoose.connect(process.env.MONGO_URL,
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
-// middleware pour pouvoir lire le contenue de la requette rentrante donc d'une requette POST vers notre serveur
-app.use(express.json());
+
 
 // un middleWare pour gerer la securité CORS
 app.use((req, res, next) => {
@@ -26,6 +25,9 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
+
+// middleware pour pouvoir lire le contenue de la requette rentrante donc d'une requette POST vers notre serveur
+app.use(express.json());
 
 // Middleware pour servir les fichiers statiques
 app.use('/images', express.static(path.join(__dirname, 'images')));
