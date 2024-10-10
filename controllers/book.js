@@ -28,9 +28,10 @@ exports.createBook = async (req, res, next) => {
 // controleur pour gérer les requêtes PUT donc pour les modifications de livres avec le bon ID
 exports.modifyBook = async (req, res, next) => {
   try {
+      // Définition de bookObject en fonction de la présence de req.file
       const bookObject = req.file
-          ? { ...JSON.parse(req.body.book) }
-          : { ...JSON.parse(req.body.book), imageUrl: req.body.imageUrl };
+          ? { ...JSON.parse(req.body.book) } // Si un fichier est fourni
+          : { ...req.body }; // Si aucun fichier, les données sont directement dans req.body
 
       delete bookObject._userId;
 
@@ -38,8 +39,8 @@ exports.modifyBook = async (req, res, next) => {
       if (!book) {
           return res.status(404).json({ message: 'Livre non trouvé' });
       }
-
-      if (book.userId !== req.auth.userId) {
+      const bookUserId = book.userId.toString();
+      if (bookUserId !== req.auth.userId) {
           return res.status(401).json({ message: 'Non autorisé' });
       }
 
@@ -49,10 +50,12 @@ exports.modifyBook = async (req, res, next) => {
           bookObject.imageUrl = `${req.protocol}://${req.get('host')}/images/${processedImagePath.split("\\images\\")[1]}`;
       }
 
+      // Mise à jour du livre avec les nouvelles données
       await Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id });
       res.status(200).json({ message: 'Livre mis à jour avec succès' });
 
   } catch (error) {
+      console.error("Erreur dans modifyBook :", error); // Log pour debug
       res.status(400).json({ error });
   }
 };
@@ -62,7 +65,8 @@ exports.modifyBook = async (req, res, next) => {
 exports.deleteBook = (req,res,next) => {
   Book.findOne({_id: req.params.id})
   .then(book => {
-    if (book.userId != req.auth.userId){
+    const bookUserId = book.userId.toString();
+    if (bookUserId != req.auth.userId){
       res.status(401).json({ message: 'not authorized'});
     } else {
       const filename = book.imageUrl.split('images')[1];
