@@ -1,26 +1,25 @@
-const fs = require('fs').promises; // Utilisation des promesses de fs
 const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs').promises;
 
-module.exports = async function processImage(filePath) {
+module.exports = async function processImage(buffer, originalName) {
     try {
-        const outputFilePath = filePath.replace(/\.[^.]+$/, '.webp'); // Remplace l'extension par .webp
 
-        await sharp(filePath)
+        // Crée un nom unique avec le timestamp et l'extension .webp
+        const uniqueName = originalName.split('.').slice(0, -1).join('_') + '_' + Date.now()+ 'sec' + '.webp';
+        const outputFilePath = path.join(__dirname, '../images', uniqueName);
+
+        // Traite et compresse l'image en mémoire, puis l'enregistre en .webp
+        await sharp(buffer)
             .webp({ quality: 40 })
-            .toFile(outputFilePath); // Enregistre la version compressée
+            .toFile(outputFilePath);
 
-        // // Supprime le fichier original de manière asynchrone
-        // setTimeout(async () => {
-        //     try {
-        //         await fs.unlink(filePath);
-        //     } catch (error) {
-        //         console.error("Erreur lors de la suppression du fichier avec fs.promises.unlink:", error);
-        //     }
-        // }, 100); // Délai de 100 ms avant la suppression
-
-        return outputFilePath; // Retourne le chemin de l'image compressée
+        return outputFilePath; // Retourne le chemin complet de l'image traitée
     } catch (error) {
-        console.error("Erreur lors du traitement de l'image avec sharp:", error);
+        console.error("Erreur lors du traitement de l'image avec Sharp:", error);
         throw error;
     }
 };
+
+
+

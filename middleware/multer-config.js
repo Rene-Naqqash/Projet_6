@@ -1,6 +1,6 @@
 const multer = require('multer');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
 // la fonction qui créer le dossier images si nécessaire donc s'il est pas deja là
 const ensureImagesDirectoryExists = () => {
@@ -13,24 +13,6 @@ const ensureImagesDirectoryExists = () => {
 // lancer la fonction de verif
 ensureImagesDirectoryExists();
 
-const MIME_TYPES = {
-    'image/jpg': 'jpg',
-    'image/jpeg': 'jpg',
-    'image/png': 'png'
-}; 
-
-const storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, 'images')
-    },
-    filename: (req, file, callback) => {
-        const name = file.originalname.split('.').slice(0,-1).join('.').split(' ').join('_');
-        const extension = MIME_TYPES[file.mimetype];
-        callback(null,name + '_'+ Date.now()+ 'sec' + '.' + extension);
-       
-    }
-});
-
-
+const storage = multer.memoryStorage();
 
 module.exports = multer({ storage: storage }).single('image');
