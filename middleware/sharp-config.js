@@ -6,7 +6,7 @@ module.exports = async function processImage(filePath) {
         const outputFilePath = filePath.replace(/\.[^.]+$/, '.webp'); // Remplace l'extension par .webp
 
         await sharp(filePath)
-            .webp({ quality: 20 })
+            .webp({ quality: 40 })
             .toFile(outputFilePath); // Enregistre la version compressée
 
         // // Supprime le fichier original de manière asynchrone
